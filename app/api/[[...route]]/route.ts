@@ -21,9 +21,7 @@ app.onError((err, c) => {
 });
 
 // Define the base path and attach the document routes
-const routes = app.basePath("/api").route("/document", documentRoute);
-
-console.log(routes);
+app.basePath("/api").route("/document", documentRoute);
 
 // Root route for the API
 app.get("/", (c) => {
@@ -31,9 +29,6 @@ app.get("/", (c) => {
     message: "Hello from Ai Resume!", // Welcome message for the API root
   });
 });
-
-// Export the app's type for use in TypeScript
-export type AppType = typeof routes;
 
 // Export handlers for Vercel deployment
 export const GET = handle(app);

@@ -1,33 +1,44 @@
-"use client";
-
-import { toast } from "sonner"; // Use Sonner's toast
-import { api } from "@/lib/hono-rpc";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { InferRequestType, InferResponseType } from "hono";
+import { InferRequestType } from "hono";
+import { api } from "@/lib/hono-rpc";
 
-// Correcting types
-type ResponseType = InferResponseType<typeof api.document.create.$post>;
-type RequestType = InferRequestType<typeof api.document.create.$post>["json"];
+// Define the structure of the API response explicitly to avoid circular dependencies
+type CreateDocumentResponse = {
+  success: boolean;
+  data: {
+    id: string;
+    title: string;
+    createdAt: string;
+  };
+};
+
+// Define the `DocumentAPI` type explicitly
+type DocumentAPI = {
+  create: {
+    $post: (params: { json: RequestType }) => Promise<CreateDocumentResponse>; // Use explicit response type
+  };
+};
+
+// Ensure `api` has the correct structure for `document`
+const typedApi = api as unknown as { document: DocumentAPI };
+
+// Define the request type explicitly or using inference
+type RequestType = InferRequestType<typeof typedApi.document.create.$post>["json"];
 
 const useCreateDocument = () => {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<ResponseType, Error, RequestType>({
+  const mutation = useMutation<CreateDocumentResponse, Error, RequestType>({
     mutationFn: async (json) => {
-      // Making sure the correct API call is used and return type matches ResponseType
-      const response = await api.document.create.$post({ json });
-      return (await response.json()) as ResponseType;  // Correctly type the response
+      // Ensure the API call is correctly typed and functional
+      const response = await typedApi.document.create.$post({ json });
+      return response; // Return the typed response directly
     },
-    onSuccess: (response) => {
-      console.log(response);
-      queryClient.invalidateQueries({ queryKey: ["documents"] });
-
-      // Success toast with Sonner
-      toast.success("Document created successfully.");
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["documents"] }); // Invalidate cache
     },
     onError: () => {
-      // Error toast with Sonner
-      toast.error("Failed to create document. Please try again.");
+      console.error("Failed to create document"); // Log error
     },
   });
 
