@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1746468985891,
+      "tag": "0000_sticky_namorita",
+      "breakpoints": true
+    }
+  ]
+}
