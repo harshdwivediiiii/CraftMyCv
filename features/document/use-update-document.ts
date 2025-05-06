@@ -1,10 +1,10 @@
 "use client";
 
-import { toast } from "@/hooks/use-toast";
 import { api } from "@/lib/hono-rpc";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 type ResponseType = InferResponseType<
   (typeof api.document.update)[":documentId"]["$patch"]
@@ -31,17 +31,14 @@ const useUpdateDocument = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["document", documentId],
+        queryKey: ['document', documentId],
       });
     },
     onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to update document",
-        variant: "destructive",
-      });
+      toast.error('Failed to update document');
     },
   });
+
 
   return mutation;
 };
