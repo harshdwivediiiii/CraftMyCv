@@ -17,6 +17,7 @@ app.onError((err, c) => {
   return c.json({ error: "internal error" });
 });
 
+// Create routes and assign it as a runtime object
 const routes = app.basePath("/api").route("/document", documentRoute);
 
 app.get("/", (c) => {
@@ -25,8 +26,9 @@ app.get("/", (c) => {
   });
 });
 
+// Use `routes` in the exports for handler functions
 export type AppType = typeof routes;
 
-export const GET = handle(app);
-export const POST = handle(app);
-export const PATCH = handle(app);
+export const GET = handle(routes); // Using routes here
+export const POST = handle(routes); // Using routes here
+export const PATCH = handle(routes); // Using routes here

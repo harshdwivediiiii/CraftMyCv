@@ -32,7 +32,7 @@ const SkillsForm = () => {
       ...resumeInfo,
       skills: skillsList,
     });
-  }, [skillsList]);
+  }, [skillsList, resumeInfo, onUpdate]);
 
   const handleChange = (
     value: string | number,
@@ -80,7 +80,7 @@ const SkillsForm = () => {
         }
       );
     },
-    [skillsList]
+    [skillsList, mutateAsync]
   );
   
 

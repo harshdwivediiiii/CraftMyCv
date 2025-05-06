@@ -46,13 +46,41 @@ const documentRoute = new Hono()
           .insert(documentTable)
           .values(newDoc)
           .returning();
-        return c.json(
-          {
-            success: "ok",
-            data,
-          },
-          { status: 200 }
-        );
+
+
+          console.log("Document inserted:", data);
+
+        // Generate a PDF using pdf-lib
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage([600, 400]);
+
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const titleText = `Title: ${title}`;
+        const authorText = `Author: ${authorName}`;
+
+        page.drawText(titleText, {
+          x: 50,
+          y: 350,
+          font,
+          size: 20,
+          color: rgb(0, 0, 0),
+        });
+
+        page.drawText(authorText, {
+          x: 50,
+          y: 300,
+          font,
+          size: 15,
+          color: rgb(0, 0, 0),
+        });
+
+        const pdfBytes = await pdfDoc.save();
+
+        return c.body(pdfBytes.slice().buffer, 200, {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment; filename=document-${documentId}.pdf`,
+        });
+        
       } catch (error) {
         return c.json(
           {
