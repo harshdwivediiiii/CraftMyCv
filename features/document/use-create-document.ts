@@ -1,26 +1,12 @@
 "use client";
 
-import { toast } from "sonner";
+import { toast } from "sonner"; // Use Sonner's toast
 import { api } from "@/lib/hono-rpc";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { InferRequestType } from "hono";
+import { InferRequestType, InferResponseType } from "hono";
 
-// Define the shape of the document data returned from the API
-type DocumentData = {
-  id: string;
-  title: string;
-  summary?: string | null;
-  themeColor?: string;
-  thumbnail?: string | null;
-  currentPosition?: number;
-  status?: "archived" | "private" | "public";
-};
-
-type ResponseType = {
-  success: boolean;
-  data?: DocumentData;
-};
-
+// Correcting types
+type ResponseType = InferResponseType<typeof api.document.create.$post>;
 type RequestType = InferRequestType<typeof api.document.create.$post>["json"];
 
 const useCreateDocument = () => {
@@ -28,23 +14,20 @@ const useCreateDocument = () => {
 
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (json) => {
+      // Making sure the correct API call is used and return type matches ResponseType
       const response = await api.document.create.$post({ json });
-      const data = (await response.json()) as ResponseType;
-      return data;
+      return (await response.json()) as ResponseType;  // Correctly type the response
     },
     onSuccess: (response) => {
+      console.log(response);
       queryClient.invalidateQueries({ queryKey: ["documents"] });
 
-      toast.success("Document created successfully", {
-        description: response.success
-          ? "You can now edit your document."
-          : "Document created, but status unknown.",
-      });
+      // Success toast with Sonner
+      toast.success("Document created successfully.");
     },
     onError: () => {
-      toast.error("Failed to create document", {
-        description: "Please try again later.",
-      });
+      // Error toast with Sonner
+      toast.error("Failed to create document. Please try again.");
     },
   });
 
