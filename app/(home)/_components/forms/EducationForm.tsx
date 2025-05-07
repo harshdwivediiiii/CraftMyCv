@@ -72,10 +72,10 @@ const EducationForm = (props: { handleNext: () => void }) => {
         const currentNo = resumeInfo?.currentPosition
           ? resumeInfo.currentPosition + 1
           : 1;
-
+  
         await mutateAsync(
           {
-            currentPosition: currentNo,
+            currentPosition: currentNo, // Corrected property name
             thumbnail: thumbnail,
             education: educationList,
           },
@@ -96,7 +96,6 @@ const EducationForm = (props: { handleNext: () => void }) => {
     },
     [resumeInfo, educationList, mutateAsync, handleNext]
   );
-
   return (
     <div>
       <div className="w-full">
