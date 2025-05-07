@@ -38,6 +38,7 @@ export type PersonalInfoType = {
   address?: string | null;
   phone?: string | null;
   email?: string | null;
+  name?: string | null;
 };
 
 export type StatusType = "archived" | "private" | "public" | undefined;

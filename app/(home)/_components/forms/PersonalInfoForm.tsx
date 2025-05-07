@@ -37,7 +37,7 @@ const PersonalInfoForm = (props: { handleNext: () => void }) => {
         ...(resumeInfo?.personalInfo || initialState),
       });
     }
-  }, [resumeInfo?.personalInfo]);
+  }, [resumeInfo?.personalInfo, resumeInfo]);
 
   const handleChange = useCallback(
     (e: { target: { name: string; value: string } }) => {
@@ -55,7 +55,7 @@ const PersonalInfoForm = (props: { handleNext: () => void }) => {
         },
       });
     },
-    [resumeInfo, onUpdate]
+    [resumeInfo, onUpdate, personalInfo]
   );
 
   const handleSubmit = useCallback(
@@ -67,24 +67,30 @@ const PersonalInfoForm = (props: { handleNext: () => void }) => {
         ? resumeInfo?.currentPosition + 1
         : 1;
   
-      await mutateAsync(
-        {
-          currentPosition: currentNo,
-          thumbnail: thumbnail,
-          personalInfo: personalInfo,
-        },
-        {
-          onSuccess: () => {
-            toast.success("PersonalInfo updated successfully");
-            handleNext();
+        await mutateAsync(
+          {
+            currentPosition: currentNo,
+            thumbnail: thumbnail,
+            personalInfo: {
+              ...personalInfo,
+              name: `${personalInfo.firstName ?? ""} ${personalInfo.lastName ?? ""}`.trim(),
+              email: personalInfo.email ?? "", // Provide a default value for email
+              phone: personalInfo.phone ?? "", // Ensure phone is not undefined
+              address: personalInfo.address ?? "", // Ensure address is not undefined
+            },
           },
-          onError: () => {
-            toast.error("Failed to update personal information");
-          },
-        }
-      );
+          {
+            onSuccess: () => {
+              toast.success("PersonalInfo updated successfully");
+              handleNext();
+            },
+            onError: () => {
+              toast.error("Failed to update personal information");
+            },
+          }
+        );
     },
-    [resumeInfo, personalInfo]
+    [resumeInfo, personalInfo, mutateAsync, handleNext]
   );
   
 

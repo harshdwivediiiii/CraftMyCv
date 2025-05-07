@@ -5,6 +5,23 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 
+type EducationType = {
+  id?: number;
+  universityName: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  degree: string | null;
+  major: string | null;
+  description: string | null;
+};
+
+type PersonalInfoType = {
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+};
+
 // Explicitly define the response type to avoid circular references
 type UpdateDocumentResponse = {
   success: boolean;
@@ -22,6 +39,9 @@ type UpdateDocumentRequest = {
   themeColor?: string;
   thumbnail?: string | null;
   status?: "archived" | "active" | "draft";
+  currentPosition?: number | string | null; // Use CamelCase and ensure correct type
+  personalInfo?: PersonalInfoType; // Use the defined PersonalInfoType
+  education?: EducationType[] | null;
 };
 
 // Define the `DocumentAPI` type explicitly
