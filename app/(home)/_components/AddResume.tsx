@@ -6,7 +6,9 @@ import React, { useCallback } from "react";
 
 const AddResume = () => {
   const router = useRouter();
-  const { isPending, mutate } = useCreateDocument();
+  const { status, mutate } = useCreateDocument(); // Use status from useMutation
+  const isLoading = status === "pending"; // Compare with "pending" instead of "loading"
+
   const onCreate = useCallback(() => {
     mutate(
       {
@@ -14,12 +16,13 @@ const AddResume = () => {
       },
       {
         onSuccess: (response) => {
-          const documentId = response.data.documentId;
+          const documentId = response.data.id; // Use `id` instead of `documentId`
           router.push(`/dashboard/document/${documentId}/edit`);
         },
       }
     );
   }, [mutate, router]);
+
   return (
     <>
       <div
@@ -43,15 +46,10 @@ const AddResume = () => {
           <span>
             <Plus size="30px" />
           </span>
-          <p
-            className="text-sm font-semibold
-          "
-          >
-            Blank Resume
-          </p>
+          <p className="text-sm font-semibold">Blank Resume</p>
         </div>
       </div>
-      {isPending && (
+      {isLoading && ( // Show loading indicator during mutation
         <div
           className="fixed top-0 left-0 z-[9999]
       right-0 flex flex-col gap-2
